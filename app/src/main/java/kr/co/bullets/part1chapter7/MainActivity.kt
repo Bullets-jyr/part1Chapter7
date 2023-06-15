@@ -20,6 +20,13 @@ class MainActivity : AppCompatActivity(), WordAdapter.ItemClickListener {
         }
     }
     private var selectedWord: Word? = null
+    private val updateEditWordResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val editWord = result.data?.getParcelableExtra<Word>("editWord")
+
+        if (result.resultCode == RESULT_OK && editWord != null) {
+            updateEditWord(editWord)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +47,9 @@ class MainActivity : AppCompatActivity(), WordAdapter.ItemClickListener {
         binding.deleteImageView.setOnClickListener {
             delete()
         }
+        binding.editImageView.setOnClickListener {
+            edit()
+        }
     }
 
     private fun initRecyclerView() {
@@ -52,8 +62,10 @@ class MainActivity : AppCompatActivity(), WordAdapter.ItemClickListener {
         wordAdapter = WordAdapter(mutableListOf(), this)
         binding.wordRecyclerView.apply {
             adapter = wordAdapter
-            layoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
-            val dividerItemDecoration = DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL)
+            layoutManager =
+                LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
+            val dividerItemDecoration =
+                DividerItemDecoration(applicationContext, LinearLayoutManager.VERTICAL)
             addItemDecoration(dividerItemDecoration)
         }
 
@@ -81,6 +93,23 @@ class MainActivity : AppCompatActivity(), WordAdapter.ItemClickListener {
                 }
             }
         }.start()
+    }
+
+    private fun updateEditWord(word: Word) {
+        val index = wordAdapter.list.indexOfFirst { it.id == word.id }
+        wordAdapter.list[index] = word
+        runOnUiThread {
+            wordAdapter.notifyItemChanged(index)
+            selectedWord = word
+            binding.textTextView.text = word.text
+            binding.meanTextView.text = word.mean
+        }
+    }
+
+    private fun edit() {
+        if (selectedWord == null) return
+        val intent = Intent(this, AddActivity::class.java).putExtra("originWord", selectedWord)
+        updateEditWordResult.launch(intent)
     }
 
     private fun delete() {
