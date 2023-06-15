@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.view.children
+import androidx.core.widget.addTextChangedListener
 import com.google.android.material.chip.Chip
 import kr.co.bullets.part1chapter7.databinding.ActivityAddBinding
 
@@ -36,6 +37,16 @@ class AddActivity : AppCompatActivity() {
         binding.typeChipGroup.apply {
             types.forEach { text ->
                 addView(createChip(text))
+            }
+        }
+
+        binding.textInputEditText.addTextChangedListener {
+            it?.let { text ->
+                binding.textTextInputLayout.error = when (text.length) {
+                    0 -> "값을 입력해주세요"
+                    1 -> "2자 이상을 입력해주세요"
+                    else -> null
+                }
             }
         }
 
