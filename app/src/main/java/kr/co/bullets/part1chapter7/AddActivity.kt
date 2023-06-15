@@ -2,6 +2,7 @@ package kr.co.bullets.part1chapter7
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import com.google.android.material.chip.Chip
 import kr.co.bullets.part1chapter7.databinding.ActivityAddBinding
 
@@ -14,6 +15,9 @@ class AddActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initViews()
+        binding.addButton.setOnClickListener {
+            add()
+        }
     }
 
     private fun initViews() {
@@ -33,5 +37,21 @@ class AddActivity : AppCompatActivity() {
             isCheckable = true
             isClickable = true
         }
+    }
+
+    private fun add() {
+        val text = binding.textInputEditText.text.toString()
+        val mean = binding.meanTextInputEditText.text.toString()
+        val type = findViewById<Chip>(binding.typeChipGroup.checkedChipId).text.toString()
+        val word = Word(text, mean, type)
+
+        // Cannot access database on the main thread since it may potentially lock the UI for a long period of time.
+        Thread {
+            AppDatabase.getInstance(this)?.wordDao()?.insert(word)
+            runOnUiThread {
+                Toast.makeText(this, "저장을 완료했습니다.", Toast.LENGTH_SHORT).show()
+            }
+            finish()
+        }.start()
     }
 }

@@ -16,6 +16,7 @@
         app:layout_constraintStart_toStartOf="@id/barrier"
         app:layout_constraintTop_toBottomOf="@id/delete_image_view" />
 
+    <!-- padding: 유저의 클릭 영역 확보 -->
     <ImageView
         android:id="@+id/delete_image_view"
         android:layout_width="wrap_content"
@@ -47,7 +48,7 @@
         app:layout_constraintStart_toStartOf="@id/text_text_view"
         app:layout_constraintTop_toBottomOf="@id/text_text_view"
         tools:text="뜻" />
-
+    <!-- edit_image_view, delete_image_view 둘 중에 하나가 커져도 그 중에 큰걸 기준으로 설정 -->
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier"
         android:layout_width="wrap_content"
